@@ -1,0 +1,3839 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Education API",
+		"description": "FastAPI CRUD application for education management with MongoDB",
+		"version": "1.0.0"
+	},
+	"paths": {
+		"/api/auth/signup": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Signup",
+				"description": "Register a new user and send OTP to email.",
+				"operationId": "signup_api_auth_signup_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SignupRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SignupResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/verify-otp": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Verify Otp",
+				"description": "Verify the OTP code.",
+				"operationId": "verify_otp_api_auth_verify_otp_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/VerifyOTPRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_VerifyOTPResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/set-password": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Set Password",
+				"description": "Set password after OTP verification.",
+				"operationId": "set_password_api_auth_set_password_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SetPasswordRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_UserResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/login": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Login",
+				"description": "Login with email and password.",
+				"operationId": "login_api_auth_login_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/LoginRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_TokenResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/forgot-password": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Forgot Password",
+				"description": "Request password reset OTP.",
+				"operationId": "forgot_password_api_auth_forgot_password_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ForgotPasswordRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/reset-password": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Reset Password",
+				"description": "Reset password using OTP.",
+				"operationId": "reset_password_api_auth_reset_password_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ResetPasswordRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/change-password": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Change Password",
+				"description": "Change password for authenticated user.",
+				"operationId": "change_password_api_auth_change_password_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ChangePasswordRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/auth/me": {
+			"get": {
+				"tags": ["auth"],
+				"summary": "Get Me",
+				"description": "Get current user profile.",
+				"operationId": "get_me_api_auth_me_get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_UserResponse_"
+								}
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/auth/logout": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Logout",
+				"description": "Logout and invalidate the current token.",
+				"operationId": "logout_api_auth_logout_post",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/courses/": {
+			"post": {
+				"tags": ["courses"],
+				"summary": "Create Course",
+				"operationId": "create_course_api_courses__post",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CourseCreate" }
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Course_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["courses"],
+				"summary": "Get Courses",
+				"operationId": "get_courses_api_courses__get",
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"title": "Skip"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1,
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Active"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_Course__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/courses/{course_id}": {
+			"get": {
+				"tags": ["courses"],
+				"summary": "Get Course",
+				"operationId": "get_course_api_courses__course_id__get",
+				"parameters": [
+					{
+						"name": "course_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Course Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Course_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["courses"],
+				"summary": "Update Course",
+				"operationId": "update_course_api_courses__course_id__put",
+				"parameters": [
+					{
+						"name": "course_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Course Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CourseUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Course_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["courses"],
+				"summary": "Delete Course",
+				"operationId": "delete_course_api_courses__course_id__delete",
+				"parameters": [
+					{
+						"name": "course_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Course Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/subjects/": {
+			"post": {
+				"tags": ["subjects"],
+				"summary": "Create Subject",
+				"operationId": "create_subject_api_subjects__post",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SubjectCreate" }
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Subject_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["subjects"],
+				"summary": "Get Subjects",
+				"operationId": "get_subjects_api_subjects__get",
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"title": "Skip"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1,
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "course_id",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "string" }, { "type": "null" }],
+							"title": "Course Id"
+						}
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Active"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_Subject__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/subjects/{subject_id}": {
+			"get": {
+				"tags": ["subjects"],
+				"summary": "Get Subject",
+				"operationId": "get_subject_api_subjects__subject_id__get",
+				"parameters": [
+					{
+						"name": "subject_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Subject Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Subject_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["subjects"],
+				"summary": "Update Subject",
+				"operationId": "update_subject_api_subjects__subject_id__put",
+				"parameters": [
+					{
+						"name": "subject_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Subject Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SubjectUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Subject_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["subjects"],
+				"summary": "Delete Subject",
+				"operationId": "delete_subject_api_subjects__subject_id__delete",
+				"parameters": [
+					{
+						"name": "subject_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Subject Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/chapters/": {
+			"post": {
+				"tags": ["chapters"],
+				"summary": "Create Chapter",
+				"operationId": "create_chapter_api_chapters__post",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ChapterCreate" }
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Chapter_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["chapters"],
+				"summary": "Get Chapters",
+				"operationId": "get_chapters_api_chapters__get",
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"title": "Skip"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1,
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "subject_id",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "string" }, { "type": "null" }],
+							"title": "Subject Id"
+						}
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Active"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_Chapter__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/chapters/{chapter_id}": {
+			"get": {
+				"tags": ["chapters"],
+				"summary": "Get Chapter",
+				"operationId": "get_chapter_api_chapters__chapter_id__get",
+				"parameters": [
+					{
+						"name": "chapter_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Chapter Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Chapter_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["chapters"],
+				"summary": "Update Chapter",
+				"operationId": "update_chapter_api_chapters__chapter_id__put",
+				"parameters": [
+					{
+						"name": "chapter_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Chapter Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ChapterUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Chapter_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["chapters"],
+				"summary": "Delete Chapter",
+				"operationId": "delete_chapter_api_chapters__chapter_id__delete",
+				"parameters": [
+					{
+						"name": "chapter_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Chapter Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/topics/": {
+			"post": {
+				"tags": ["topics"],
+				"summary": "Create Topic",
+				"operationId": "create_topic_api_topics__post",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/TopicCreate" }
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Topic_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["topics"],
+				"summary": "Get Topics",
+				"operationId": "get_topics_api_topics__get",
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"title": "Skip"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1,
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "chapter_id",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "string" }, { "type": "null" }],
+							"title": "Chapter Id"
+						}
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Active"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_Topic__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/topics/{topic_id}": {
+			"get": {
+				"tags": ["topics"],
+				"summary": "Get Topic",
+				"operationId": "get_topic_api_topics__topic_id__get",
+				"parameters": [
+					{
+						"name": "topic_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Topic Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Topic_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["topics"],
+				"summary": "Update Topic",
+				"operationId": "update_topic_api_topics__topic_id__put",
+				"parameters": [
+					{
+						"name": "topic_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Topic Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/TopicUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse_Topic_" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["topics"],
+				"summary": "Delete Topic",
+				"operationId": "delete_topic_api_topics__topic_id__delete",
+				"parameters": [
+					{
+						"name": "topic_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Topic Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/questions/": {
+			"post": {
+				"tags": ["questions"],
+				"summary": "Create Question",
+				"operationId": "create_question_api_questions__post",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/QuestionCreate" }
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Question_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["questions"],
+				"summary": "Get Questions",
+				"operationId": "get_questions_api_questions__get",
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"minimum": 0,
+							"default": 0,
+							"title": "Skip"
+						}
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1,
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "topic_id",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "string" }, { "type": "null" }],
+							"title": "Topic Id"
+						}
+					},
+					{
+						"name": "level",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "integer" }, { "type": "null" }],
+							"title": "Level"
+						}
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Active"
+						}
+					},
+					{
+						"name": "is_marked_for_review",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Is Marked For Review"
+						}
+					},
+					{
+						"name": "verified_in_app",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+							"title": "Verified In App"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_Question__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/questions/{question_id}": {
+			"get": {
+				"tags": ["questions"],
+				"summary": "Get Question",
+				"operationId": "get_question_api_questions__question_id__get",
+				"parameters": [
+					{
+						"name": "question_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Question Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Question_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["questions"],
+				"summary": "Update Question",
+				"operationId": "update_question_api_questions__question_id__put",
+				"parameters": [
+					{
+						"name": "question_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Question Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/QuestionUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_Question_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["questions"],
+				"summary": "Delete Question",
+				"operationId": "delete_question_api_questions__question_id__delete",
+				"parameters": [
+					{
+						"name": "question_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Question Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/migrate/": {
+			"post": {
+				"tags": ["migration"],
+				"summary": "Run Migration",
+				"description": "Run migration from Supabase JSON exports to MongoDB.\n\nExpects data in:\n- data/courses/courses.json\n- data/subjects/subjects.json\n- data/chapters/chapters.json\n- data/topics/topics.json\n- data/questions/*.json (multiple files supported)",
+				"operationId": "run_migration_api_migrate__post",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/migrate/clear": {
+			"delete": {
+				"tags": ["migration"],
+				"summary": "Clear All Data",
+				"description": "Clear all data from all collections. Use with caution!",
+				"operationId": "clear_all_data_api_migrate_clear_delete",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/APIResponse" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/tests/generate": {
+			"post": {
+				"tags": ["tests"],
+				"summary": "Generate Test",
+				"description": "Generate a new test based on test type and reference.",
+				"operationId": "generate_test_api_tests_generate_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/GenerateTestRequest" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_TestMetadataResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/tests": {
+			"get": {
+				"tags": ["tests"],
+				"summary": "Get User Tests",
+				"description": "Get all tests for the current user.",
+				"operationId": "get_user_tests_api_tests_get",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "default": 0, "title": "Skip" }
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "default": 20, "title": "Limit" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_TestMetadataResponse__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/tests/{test_id}": {
+			"get": {
+				"tags": ["tests"],
+				"summary": "Get Test",
+				"description": "Get a test by ID (without answers for taking the test).",
+				"operationId": "get_test_api_tests__test_id__get",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Test Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_TestDetailResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/tests/{test_id}/submit": {
+			"post": {
+				"tags": ["tests"],
+				"summary": "Submit Test",
+				"description": "Submit a test and calculate score.",
+				"operationId": "submit_test_api_tests__test_id__submit_post",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Test Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SubmitTestRequest" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SubmitTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests": {
+			"get": {
+				"tags": ["set-tests"],
+				"summary": "Get Set Tests",
+				"description": "Get all set tests with optional filtering.",
+				"operationId": "get_set_tests_api_set_tests_get",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "test_type",
+						"in": "query",
+						"required": false,
+						"schema": { "$ref": "#/components/schemas/SetTestType" }
+					},
+					{
+						"name": "is_active",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "boolean", "title": "Is Active" }
+					},
+					{
+						"name": "skip",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "default": 0, "title": "Skip" }
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": { "type": "integer", "default": 20, "title": "Limit" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_List_SetTestListResponse__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests/{set_test_id}": {
+			"get": {
+				"tags": ["set-tests"],
+				"summary": "Get Set Test",
+				"description": "Get a single set test by ID.",
+				"operationId": "get_set_test_api_set_tests__set_test_id__get",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["set-tests"],
+				"summary": "Delete Set Test",
+				"description": "Delete a set test configuration.",
+				"operationId": "delete_set_test_api_set_tests__set_test_id__delete",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_NoneType_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests/topic": {
+			"post": {
+				"tags": ["set-tests"],
+				"summary": "Create Topic Test",
+				"description": "Create a new topic test configuration.",
+				"operationId": "create_topic_test_api_set_tests_topic_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/TopicTestCreate" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/set-tests/chapter": {
+			"post": {
+				"tags": ["set-tests"],
+				"summary": "Create Chapter Test",
+				"description": "Create a new chapter test configuration.",
+				"operationId": "create_chapter_test_api_set_tests_chapter_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ChapterTestCreate" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/set-tests/subject": {
+			"post": {
+				"tags": ["set-tests"],
+				"summary": "Create Subject Test",
+				"description": "Create a new subject test configuration.",
+				"operationId": "create_subject_test_api_set_tests_subject_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SubjectTestCreate" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/set-tests/course": {
+			"post": {
+				"tags": ["set-tests"],
+				"summary": "Create Course Test",
+				"description": "Create a new course test configuration.",
+				"operationId": "create_course_test_api_set_tests_course_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CourseTestCreate" }
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				},
+				"security": [{ "HTTPBearer": [] }]
+			}
+		},
+		"/api/set-tests/topic/{set_test_id}": {
+			"put": {
+				"tags": ["set-tests"],
+				"summary": "Update Topic Test",
+				"description": "Update a topic test configuration.",
+				"operationId": "update_topic_test_api_set_tests_topic__set_test_id__put",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/TopicTestUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests/chapter/{set_test_id}": {
+			"put": {
+				"tags": ["set-tests"],
+				"summary": "Update Chapter Test",
+				"description": "Update a chapter test configuration.",
+				"operationId": "update_chapter_test_api_set_tests_chapter__set_test_id__put",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/ChapterTestUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests/subject/{set_test_id}": {
+			"put": {
+				"tags": ["set-tests"],
+				"summary": "Update Subject Test",
+				"description": "Update a subject test configuration.",
+				"operationId": "update_subject_test_api_set_tests_subject__set_test_id__put",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/SubjectTestUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/set-tests/course/{set_test_id}": {
+			"put": {
+				"tags": ["set-tests"],
+				"summary": "Update Course Test",
+				"description": "Update a course test configuration.",
+				"operationId": "update_course_test_api_set_tests_course__set_test_id__put",
+				"security": [{ "HTTPBearer": [] }],
+				"parameters": [
+					{
+						"name": "set_test_id",
+						"in": "path",
+						"required": true,
+						"schema": { "type": "string", "title": "Set Test Id" }
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": { "$ref": "#/components/schemas/CourseTestUpdate" }
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/APIResponse_SetTestResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
+		},
+		"/": {
+			"get": {
+				"summary": "Root",
+				"operationId": "root__get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					}
+				}
+			}
+		},
+		"/health": {
+			"get": {
+				"summary": "Health Check",
+				"operationId": "health_check_health_get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": { "application/json": { "schema": {} } }
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"APIResponse": {
+				"properties": {
+					"data": { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse"
+			},
+			"APIResponse_Chapter_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Chapter" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[Chapter]"
+			},
+			"APIResponse_Course_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Course" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[Course]"
+			},
+			"APIResponse_List_Chapter__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Chapter" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[Chapter]]"
+			},
+			"APIResponse_List_Course__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Course" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[Course]]"
+			},
+			"APIResponse_List_Question__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Question" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[Question]]"
+			},
+			"APIResponse_List_SetTestListResponse__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/SetTestListResponse" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[SetTestListResponse]]"
+			},
+			"APIResponse_List_Subject__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Subject" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[Subject]]"
+			},
+			"APIResponse_List_TestMetadataResponse__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/TestMetadataResponse"
+								},
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[TestMetadataResponse]]"
+			},
+			"APIResponse_List_Topic__": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Topic" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Data"
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[List[Topic]]"
+			},
+			"APIResponse_NoneType_": {
+				"properties": {
+					"data": { "type": "null", "title": "Data" },
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[NoneType]"
+			},
+			"APIResponse_Question_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Question" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[Question]"
+			},
+			"APIResponse_SetTestResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/SetTestResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[SetTestResponse]"
+			},
+			"APIResponse_SignupResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/SignupResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[SignupResponse]"
+			},
+			"APIResponse_Subject_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Subject" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[Subject]"
+			},
+			"APIResponse_SubmitTestResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/SubmitTestResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[SubmitTestResponse]"
+			},
+			"APIResponse_TestDetailResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/TestDetailResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[TestDetailResponse]"
+			},
+			"APIResponse_TestMetadataResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/TestMetadataResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[TestMetadataResponse]"
+			},
+			"APIResponse_TokenResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/TokenResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[TokenResponse]"
+			},
+			"APIResponse_Topic_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Topic" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[Topic]"
+			},
+			"APIResponse_UserResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/UserResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[UserResponse]"
+			},
+			"APIResponse_VerifyOTPResponse_": {
+				"properties": {
+					"data": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/VerifyOTPResponse" },
+							{ "type": "null" }
+						]
+					},
+					"message": { "type": "string", "title": "Message" }
+				},
+				"type": "object",
+				"required": ["message"],
+				"title": "APIResponse[VerifyOTPResponse]"
+			},
+			"AnswerItem": {
+				"properties": {
+					"question_id": { "type": "string", "title": "Question Id" },
+					"user_answer": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "User Answer"
+					}
+				},
+				"type": "object",
+				"required": ["question_id"],
+				"title": "AnswerItem"
+			},
+			"ChangePasswordRequest": {
+				"properties": {
+					"current_password": { "type": "string", "title": "Current Password" },
+					"new_password": {
+						"type": "string",
+						"minLength": 8,
+						"title": "New Password"
+					}
+				},
+				"type": "object",
+				"required": ["current_password", "new_password"],
+				"title": "ChangePasswordRequest"
+			},
+			"Chapter": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": { "type": "integer", "title": "Order Num" },
+					"subject_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Subject Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"id": { "type": "string", "title": "Id" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": ["name", "order_num", "id", "created_at", "updated_at"],
+				"title": "Chapter"
+			},
+			"ChapterCreate": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": { "type": "integer", "title": "Order Num" },
+					"subject_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Subject Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					}
+				},
+				"type": "object",
+				"required": ["name", "order_num"],
+				"title": "ChapterCreate"
+			},
+			"ChapterTestCreate": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 1,
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"type": "boolean",
+						"title": "Is Active",
+						"default": true
+					},
+					"test_type": {
+						"$ref": "#/components/schemas/SetTestType",
+						"default": "chapter"
+					},
+					"chapter_id": { "type": "string", "title": "Chapter Id" },
+					"question_count": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Question Count"
+					},
+					"marks_per_question": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Negative Marks",
+						"default": 0
+					},
+					"difficulty": { "$ref": "#/components/schemas/Difficulty" }
+				},
+				"type": "object",
+				"required": [
+					"name",
+					"time_limit_minutes",
+					"chapter_id",
+					"question_count",
+					"marks_per_question",
+					"difficulty"
+				],
+				"title": "ChapterTestCreate"
+			},
+			"ChapterTestUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 200, "minLength": 1 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"chapter_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Chapter Id"
+					},
+					"question_count": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Question Count"
+					},
+					"marks_per_question": {
+						"anyOf": [{ "type": "number", "minimum": 0.0 }, { "type": "null" }],
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"anyOf": [{ "type": "number", "minimum": 0.0 }, { "type": "null" }],
+						"title": "Negative Marks"
+					},
+					"difficulty": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Difficulty" },
+							{ "type": "null" }
+						]
+					}
+				},
+				"type": "object",
+				"title": "ChapterTestUpdate"
+			},
+			"ChapterUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 255 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Order Num"
+					},
+					"subject_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Subject Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					}
+				},
+				"type": "object",
+				"title": "ChapterUpdate"
+			},
+			"Course": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"id": { "type": "string", "title": "Id" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": ["name", "id", "created_at", "updated_at"],
+				"title": "Course"
+			},
+			"CourseCreate": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					}
+				},
+				"type": "object",
+				"required": ["name"],
+				"title": "CourseCreate"
+			},
+			"CourseTestCreate": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 1,
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"type": "boolean",
+						"title": "Is Active",
+						"default": true
+					},
+					"test_type": {
+						"$ref": "#/components/schemas/SetTestType",
+						"default": "course"
+					},
+					"course_id": { "type": "string", "title": "Course Id" },
+					"subject_sections": {
+						"items": { "$ref": "#/components/schemas/SubjectSection-Input" },
+						"type": "array",
+						"title": "Subject Sections"
+					}
+				},
+				"type": "object",
+				"required": [
+					"name",
+					"time_limit_minutes",
+					"course_id",
+					"subject_sections"
+				],
+				"title": "CourseTestCreate"
+			},
+			"CourseTestUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 200, "minLength": 1 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"course_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Course Id"
+					},
+					"subject_sections": {
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/SubjectSection-Input"
+								},
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Subject Sections"
+					}
+				},
+				"type": "object",
+				"title": "CourseTestUpdate"
+			},
+			"CourseUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 255 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					}
+				},
+				"type": "object",
+				"title": "CourseUpdate"
+			},
+			"Difficulty": {
+				"properties": {
+					"L1": {
+						"type": "integer",
+						"minimum": 0.0,
+						"title": "L1",
+						"default": 0
+					},
+					"L2": {
+						"type": "integer",
+						"minimum": 0.0,
+						"title": "L2",
+						"default": 0
+					},
+					"L3": {
+						"type": "integer",
+						"minimum": 0.0,
+						"title": "L3",
+						"default": 0
+					}
+				},
+				"type": "object",
+				"title": "Difficulty"
+			},
+			"ForgotPasswordRequest": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" }
+				},
+				"type": "object",
+				"required": ["email"],
+				"title": "ForgotPasswordRequest"
+			},
+			"GenerateTestRequest": {
+				"properties": {
+					"test_type": { "$ref": "#/components/schemas/TestType" },
+					"reference_id": { "type": "string", "title": "Reference Id" }
+				},
+				"type": "object",
+				"required": ["test_type", "reference_id"],
+				"title": "GenerateTestRequest"
+			},
+			"HTTPValidationError": {
+				"properties": {
+					"detail": {
+						"items": { "$ref": "#/components/schemas/ValidationError" },
+						"type": "array",
+						"title": "Detail"
+					}
+				},
+				"type": "object",
+				"title": "HTTPValidationError"
+			},
+			"LoginRequest": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"password": { "type": "string", "title": "Password" }
+				},
+				"type": "object",
+				"required": ["email", "password"],
+				"title": "LoginRequest"
+			},
+			"Question": {
+				"properties": {
+					"question": { "type": "string", "title": "Question" },
+					"options": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Options"
+					},
+					"has_integer_answer": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Has Integer Answer"
+					},
+					"answer": { "type": "string", "title": "Answer" },
+					"solutions": {
+						"anyOf": [
+							{ "items": { "type": "string" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Solutions"
+					},
+					"level": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Level"
+					},
+					"is_marked_for_review": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Marked For Review",
+						"default": false
+					},
+					"review_in_app": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Review In App",
+						"default": false
+					},
+					"sr_no": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Sr No"
+					},
+					"pyo": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Pyo"
+					},
+					"extra": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Extra"
+					},
+					"topic_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Topic Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"verified_in_app": {
+						"type": "boolean",
+						"title": "Verified In App",
+						"default": false
+					},
+					"id": { "type": "string", "title": "Id" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": ["question", "answer", "id", "created_at", "updated_at"],
+				"title": "Question"
+			},
+			"QuestionCreate": {
+				"properties": {
+					"question": { "type": "string", "title": "Question" },
+					"options": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Options"
+					},
+					"has_integer_answer": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Has Integer Answer"
+					},
+					"answer": { "type": "string", "title": "Answer" },
+					"solutions": {
+						"anyOf": [
+							{ "items": { "type": "string" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Solutions"
+					},
+					"level": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Level"
+					},
+					"is_marked_for_review": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Marked For Review",
+						"default": false
+					},
+					"review_in_app": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Review In App",
+						"default": false
+					},
+					"sr_no": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Sr No"
+					},
+					"pyo": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Pyo"
+					},
+					"extra": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Extra"
+					},
+					"topic_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Topic Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"verified_in_app": {
+						"type": "boolean",
+						"title": "Verified In App",
+						"default": false
+					}
+				},
+				"type": "object",
+				"required": ["question", "answer"],
+				"title": "QuestionCreate"
+			},
+			"QuestionForTaking": {
+				"properties": {
+					"question_id": { "type": "string", "title": "Question Id" },
+					"question": { "type": "string", "title": "Question" },
+					"options": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Options"
+					},
+					"has_integer_answer": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Has Integer Answer",
+						"default": false
+					},
+					"user_answer": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "User Answer"
+					}
+				},
+				"type": "object",
+				"required": ["question_id", "question"],
+				"title": "QuestionForTaking"
+			},
+			"QuestionResult": {
+				"properties": {
+					"question_id": { "type": "string", "title": "Question Id" },
+					"user_answer": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "User Answer"
+					},
+					"correct_answer": { "type": "string", "title": "Correct Answer" },
+					"is_correct": { "type": "boolean", "title": "Is Correct" }
+				},
+				"type": "object",
+				"required": [
+					"question_id",
+					"user_answer",
+					"correct_answer",
+					"is_correct"
+				],
+				"title": "QuestionResult"
+			},
+			"QuestionUpdate": {
+				"properties": {
+					"question": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Question"
+					},
+					"options": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Options"
+					},
+					"has_integer_answer": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Has Integer Answer"
+					},
+					"answer": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Answer"
+					},
+					"solutions": {
+						"anyOf": [
+							{ "items": { "type": "string" }, "type": "array" },
+							{ "type": "null" }
+						],
+						"title": "Solutions"
+					},
+					"level": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Level"
+					},
+					"is_marked_for_review": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Marked For Review"
+					},
+					"review_in_app": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Review In App"
+					},
+					"sr_no": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Sr No"
+					},
+					"pyo": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Pyo"
+					},
+					"extra": {
+						"anyOf": [
+							{ "additionalProperties": true, "type": "object" },
+							{ "type": "null" }
+						],
+						"title": "Extra"
+					},
+					"topic_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Topic Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"verified_in_app": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Verified In App"
+					}
+				},
+				"type": "object",
+				"title": "QuestionUpdate"
+			},
+			"ResetPasswordRequest": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"otp": {
+						"type": "string",
+						"maxLength": 6,
+						"minLength": 6,
+						"title": "Otp"
+					},
+					"new_password": {
+						"type": "string",
+						"minLength": 8,
+						"title": "New Password"
+					}
+				},
+				"type": "object",
+				"required": ["email", "otp", "new_password"],
+				"title": "ResetPasswordRequest"
+			},
+			"Section": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"name": { "type": "string", "title": "Name" },
+					"question_count": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Question Count"
+					},
+					"attempt_count": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Attempt Count"
+					},
+					"marks_per_question": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Negative Marks",
+						"default": 0
+					},
+					"is_numerical": {
+						"type": "boolean",
+						"title": "Is Numerical",
+						"default": false
+					},
+					"difficulty": { "$ref": "#/components/schemas/Difficulty" }
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"question_count",
+					"attempt_count",
+					"marks_per_question",
+					"difficulty"
+				],
+				"title": "Section"
+			},
+			"SetPasswordRequest": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"password": { "type": "string", "minLength": 8, "title": "Password" }
+				},
+				"type": "object",
+				"required": ["email", "password"],
+				"title": "SetPasswordRequest"
+			},
+			"SetTestListResponse": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"name": { "type": "string", "title": "Name" },
+					"time_limit_minutes": {
+						"type": "integer",
+						"title": "Time Limit Minutes"
+					},
+					"is_active": { "type": "boolean", "title": "Is Active" },
+					"test_type": { "type": "string", "title": "Test Type" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"time_limit_minutes",
+					"is_active",
+					"test_type",
+					"created_at",
+					"updated_at"
+				],
+				"title": "SetTestListResponse"
+			},
+			"SetTestResponse": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"name": { "type": "string", "title": "Name" },
+					"time_limit_minutes": {
+						"type": "integer",
+						"title": "Time Limit Minutes"
+					},
+					"is_active": { "type": "boolean", "title": "Is Active" },
+					"test_type": { "type": "string", "title": "Test Type" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					},
+					"topic_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Topic Id"
+					},
+					"chapter_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Chapter Id"
+					},
+					"subject_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Subject Id"
+					},
+					"course_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Course Id"
+					},
+					"question_count": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Question Count"
+					},
+					"marks_per_question": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Negative Marks"
+					},
+					"difficulty": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Difficulty" },
+							{ "type": "null" }
+						]
+					},
+					"sections": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Section" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Sections"
+					},
+					"subject_sections": {
+						"anyOf": [
+							{
+								"items": {
+									"$ref": "#/components/schemas/SubjectSection-Output"
+								},
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Subject Sections"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"name",
+					"time_limit_minutes",
+					"is_active",
+					"test_type",
+					"created_at",
+					"updated_at"
+				],
+				"title": "SetTestResponse"
+			},
+			"SetTestType": {
+				"type": "string",
+				"enum": ["topic", "chapter", "subject", "course"],
+				"title": "SetTestType"
+			},
+			"SignupRequest": {
+				"properties": {
+					"full_name": {
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 2,
+						"title": "Full Name"
+					},
+					"email": { "type": "string", "format": "email", "title": "Email" }
+				},
+				"type": "object",
+				"required": ["full_name", "email"],
+				"title": "SignupRequest"
+			},
+			"SignupResponse": {
+				"properties": {
+					"user_id": { "type": "string", "title": "User Id" },
+					"email": { "type": "string", "title": "Email" }
+				},
+				"type": "object",
+				"required": ["user_id", "email"],
+				"title": "SignupResponse"
+			},
+			"Subject": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"course_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Course Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"id": { "type": "string", "title": "Id" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": ["name", "id", "created_at", "updated_at"],
+				"title": "Subject"
+			},
+			"SubjectCreate": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"course_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Course Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					}
+				},
+				"type": "object",
+				"required": ["name"],
+				"title": "SubjectCreate"
+			},
+			"SubjectSection-Input": {
+				"properties": {
+					"subject_id": { "type": "string", "title": "Subject Id" },
+					"subject_name": { "type": "string", "title": "Subject Name" },
+					"sections": {
+						"items": { "$ref": "#/components/schemas/Section" },
+						"type": "array",
+						"title": "Sections"
+					}
+				},
+				"type": "object",
+				"required": ["subject_id", "subject_name", "sections"],
+				"title": "SubjectSection"
+			},
+			"SubjectSection-Output": {
+				"properties": {
+					"subject_id": { "type": "string", "title": "Subject Id" },
+					"subject_name": { "type": "string", "title": "Subject Name" },
+					"sections": {
+						"items": { "$ref": "#/components/schemas/Section" },
+						"type": "array",
+						"title": "Sections"
+					}
+				},
+				"type": "object",
+				"required": ["subject_id", "subject_name", "sections"],
+				"title": "SubjectSection"
+			},
+			"SubjectTestCreate": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 1,
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"type": "boolean",
+						"title": "Is Active",
+						"default": true
+					},
+					"test_type": {
+						"$ref": "#/components/schemas/SetTestType",
+						"default": "subject"
+					},
+					"subject_id": { "type": "string", "title": "Subject Id" },
+					"sections": {
+						"items": { "$ref": "#/components/schemas/Section" },
+						"type": "array",
+						"title": "Sections"
+					}
+				},
+				"type": "object",
+				"required": ["name", "time_limit_minutes", "subject_id", "sections"],
+				"title": "SubjectTestCreate"
+			},
+			"SubjectTestUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 200, "minLength": 1 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"subject_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Subject Id"
+					},
+					"sections": {
+						"anyOf": [
+							{
+								"items": { "$ref": "#/components/schemas/Section" },
+								"type": "array"
+							},
+							{ "type": "null" }
+						],
+						"title": "Sections"
+					}
+				},
+				"type": "object",
+				"title": "SubjectTestUpdate"
+			},
+			"SubjectUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 255 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"course_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Course Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					}
+				},
+				"type": "object",
+				"title": "SubjectUpdate"
+			},
+			"SubmitTestRequest": {
+				"properties": {
+					"answers": {
+						"items": { "$ref": "#/components/schemas/AnswerItem" },
+						"type": "array",
+						"title": "Answers"
+					}
+				},
+				"type": "object",
+				"required": ["answers"],
+				"title": "SubmitTestRequest"
+			},
+			"SubmitTestResponse": {
+				"properties": {
+					"test_id": { "type": "string", "title": "Test Id" },
+					"total_questions": { "type": "integer", "title": "Total Questions" },
+					"correct_count": { "type": "integer", "title": "Correct Count" },
+					"wrong_count": { "type": "integer", "title": "Wrong Count" },
+					"unanswered": { "type": "integer", "title": "Unanswered" },
+					"score": { "type": "number", "title": "Score" },
+					"max_score": { "type": "number", "title": "Max Score" },
+					"percentage": { "type": "number", "title": "Percentage" },
+					"negative_marking_applied": {
+						"type": "boolean",
+						"title": "Negative Marking Applied"
+					},
+					"results": {
+						"items": { "$ref": "#/components/schemas/QuestionResult" },
+						"type": "array",
+						"title": "Results"
+					}
+				},
+				"type": "object",
+				"required": [
+					"test_id",
+					"total_questions",
+					"correct_count",
+					"wrong_count",
+					"unanswered",
+					"score",
+					"max_score",
+					"percentage",
+					"negative_marking_applied",
+					"results"
+				],
+				"title": "SubmitTestResponse"
+			},
+			"TestDetailResponse": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"test_type": { "type": "string", "title": "Test Type" },
+					"reference_id": { "type": "string", "title": "Reference Id" },
+					"reference_name": { "type": "string", "title": "Reference Name" },
+					"total_questions": { "type": "integer", "title": "Total Questions" },
+					"is_submitted": { "type": "boolean", "title": "Is Submitted" },
+					"score": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Score"
+					},
+					"questions": {
+						"items": { "$ref": "#/components/schemas/QuestionForTaking" },
+						"type": "array",
+						"title": "Questions"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"test_type",
+					"reference_id",
+					"reference_name",
+					"total_questions",
+					"is_submitted",
+					"questions",
+					"created_at"
+				],
+				"title": "TestDetailResponse"
+			},
+			"TestMetadataResponse": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"test_type": { "type": "string", "title": "Test Type" },
+					"reference_id": { "type": "string", "title": "Reference Id" },
+					"reference_name": { "type": "string", "title": "Reference Name" },
+					"total_questions": { "type": "integer", "title": "Total Questions" },
+					"is_submitted": { "type": "boolean", "title": "Is Submitted" },
+					"score": {
+						"anyOf": [{ "type": "number" }, { "type": "null" }],
+						"title": "Score"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"test_type",
+					"reference_id",
+					"reference_name",
+					"total_questions",
+					"is_submitted",
+					"created_at"
+				],
+				"title": "TestMetadataResponse"
+			},
+			"TestType": {
+				"type": "string",
+				"enum": ["topic", "chapter", "subject", "course"],
+				"title": "TestType"
+			},
+			"TokenResponse": {
+				"properties": {
+					"access_token": { "type": "string", "title": "Access Token" },
+					"token_type": {
+						"type": "string",
+						"title": "Token Type",
+						"default": "bearer"
+					},
+					"role": { "type": "string", "title": "Role" }
+				},
+				"type": "object",
+				"required": ["access_token", "role"],
+				"title": "TokenResponse"
+			},
+			"Topic": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": { "type": "integer", "title": "Order Num" },
+					"chapter_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Chapter Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"resources_directory": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Resources Directory"
+					},
+					"id": { "type": "string", "title": "Id" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": ["name", "order_num", "id", "created_at", "updated_at"],
+				"title": "Topic"
+			},
+			"TopicCreate": {
+				"properties": {
+					"name": { "type": "string", "maxLength": 255, "title": "Name" },
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": { "type": "integer", "title": "Order Num" },
+					"chapter_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Chapter Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active",
+						"default": true
+					},
+					"resources_directory": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Resources Directory"
+					}
+				},
+				"type": "object",
+				"required": ["name", "order_num"],
+				"title": "TopicCreate"
+			},
+			"TopicTestCreate": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 1,
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"type": "boolean",
+						"title": "Is Active",
+						"default": true
+					},
+					"test_type": {
+						"$ref": "#/components/schemas/SetTestType",
+						"default": "topic"
+					},
+					"topic_id": { "type": "string", "title": "Topic Id" },
+					"question_count": {
+						"type": "integer",
+						"minimum": 1.0,
+						"title": "Question Count"
+					},
+					"marks_per_question": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"type": "number",
+						"minimum": 0.0,
+						"title": "Negative Marks",
+						"default": 0
+					},
+					"difficulty": { "$ref": "#/components/schemas/Difficulty" }
+				},
+				"type": "object",
+				"required": [
+					"name",
+					"time_limit_minutes",
+					"topic_id",
+					"question_count",
+					"marks_per_question",
+					"difficulty"
+				],
+				"title": "TopicTestCreate"
+			},
+			"TopicTestUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 200, "minLength": 1 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"time_limit_minutes": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Time Limit Minutes"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"topic_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Topic Id"
+					},
+					"question_count": {
+						"anyOf": [
+							{ "type": "integer", "minimum": 1.0 },
+							{ "type": "null" }
+						],
+						"title": "Question Count"
+					},
+					"marks_per_question": {
+						"anyOf": [{ "type": "number", "minimum": 0.0 }, { "type": "null" }],
+						"title": "Marks Per Question"
+					},
+					"negative_marks": {
+						"anyOf": [{ "type": "number", "minimum": 0.0 }, { "type": "null" }],
+						"title": "Negative Marks"
+					},
+					"difficulty": {
+						"anyOf": [
+							{ "$ref": "#/components/schemas/Difficulty" },
+							{ "type": "null" }
+						]
+					}
+				},
+				"type": "object",
+				"title": "TopicTestUpdate"
+			},
+			"TopicUpdate": {
+				"properties": {
+					"name": {
+						"anyOf": [
+							{ "type": "string", "maxLength": 255 },
+							{ "type": "null" }
+						],
+						"title": "Name"
+					},
+					"description": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Description"
+					},
+					"order_num": {
+						"anyOf": [{ "type": "integer" }, { "type": "null" }],
+						"title": "Order Num"
+					},
+					"chapter_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Chapter Id"
+					},
+					"is_active": {
+						"anyOf": [{ "type": "boolean" }, { "type": "null" }],
+						"title": "Is Active"
+					},
+					"resources_directory": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Resources Directory"
+					}
+				},
+				"type": "object",
+				"title": "TopicUpdate"
+			},
+			"UserResponse": {
+				"properties": {
+					"id": { "type": "string", "title": "Id" },
+					"full_name": { "type": "string", "title": "Full Name" },
+					"email": { "type": "string", "title": "Email" },
+					"role": { "type": "string", "title": "Role" },
+					"is_active": { "type": "boolean", "title": "Is Active" },
+					"is_verified": { "type": "boolean", "title": "Is Verified" },
+					"created_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Created At"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time",
+						"title": "Updated At"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"full_name",
+					"email",
+					"role",
+					"is_active",
+					"is_verified",
+					"created_at",
+					"updated_at"
+				],
+				"title": "UserResponse"
+			},
+			"ValidationError": {
+				"properties": {
+					"loc": {
+						"items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+						"type": "array",
+						"title": "Location"
+					},
+					"msg": { "type": "string", "title": "Message" },
+					"type": { "type": "string", "title": "Error Type" }
+				},
+				"type": "object",
+				"required": ["loc", "msg", "type"],
+				"title": "ValidationError"
+			},
+			"VerifyOTPRequest": {
+				"properties": {
+					"email": { "type": "string", "format": "email", "title": "Email" },
+					"otp": {
+						"type": "string",
+						"maxLength": 6,
+						"minLength": 6,
+						"title": "Otp"
+					}
+				},
+				"type": "object",
+				"required": ["email", "otp"],
+				"title": "VerifyOTPRequest"
+			},
+			"VerifyOTPResponse": {
+				"properties": {
+					"verified": { "type": "boolean", "title": "Verified" }
+				},
+				"type": "object",
+				"required": ["verified"],
+				"title": "VerifyOTPResponse"
+			}
+		},
+		"securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+	}
+}
