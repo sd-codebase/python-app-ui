@@ -1,8 +1,8 @@
 import { Typography, Card, Row, Col, Statistic } from 'antd';
-import { UserOutlined, CalendarOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, CalendarOutlined, CheckCircleOutlined, TagOutlined } from '@ant-design/icons';
 import { AppLayout } from '@components/layout';
 import { useAuth } from '@hooks/useAuth';
-import { formatDate } from '@utils/helpers';
+import { formatDateTime } from '@utils/helpers';
 
 const { Title, Text } = Typography;
 
@@ -17,7 +17,7 @@ export const UserDashboardPage: React.FC = () => {
       </div>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Account Status"
@@ -26,20 +26,31 @@ export const UserDashboardPage: React.FC = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Role"
               value={user?.role || 'User'}
               prefix={<UserOutlined />}
+              valueStyle={{ textTransform: 'capitalize' }}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={8}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="User Type"
+              value={user?.user_type || '-'}
+              prefix={<TagOutlined />}
+              valueStyle={{ textTransform: 'capitalize' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Member Since"
-              value={user?.created_at ? formatDate(user.created_at) : '-'}
+              value={user?.created_at ? formatDateTime(user.created_at) : '-'}
               prefix={<CalendarOutlined />}
             />
           </Card>
@@ -49,13 +60,21 @@ export const UserDashboardPage: React.FC = () => {
       <Card style={{ marginTop: 24 }}>
         <Title level={4}>Profile Information</Title>
         <Row gutter={[16, 16]}>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Text type="secondary">Full Name</Text>
             <div>{user?.full_name}</div>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Text type="secondary">Email</Text>
             <div>{user?.email}</div>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Text type="secondary">User Type</Text>
+            <div style={{ textTransform: 'capitalize' }}>{user?.user_type || '-'}</div>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Text type="secondary">Created At</Text>
+            <div>{user?.created_at ? formatDateTime(user.created_at) : '-'}</div>
           </Col>
         </Row>
       </Card>

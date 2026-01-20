@@ -3,6 +3,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { AppLayout } from '@components/layout';
 import { ChangePasswordForm } from '@components/auth';
 import { useAuth } from '@hooks/useAuth';
+import { formatDateTime } from '@utils/helpers';
 
 const { Title, Text } = Typography;
 
@@ -27,9 +28,17 @@ export const AdminSettingsPage: React.FC = () => {
             <Text type="secondary">Email</Text>
             <div style={{ fontSize: 16 }}>{user?.email}</div>
           </div>
-          <div>
+          <div style={{ marginBottom: 16 }}>
             <Text type="secondary">Role</Text>
             <div style={{ fontSize: 16, textTransform: 'capitalize' }}>{user?.role}</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <Text type="secondary">User Type</Text>
+            <div style={{ fontSize: 16, textTransform: 'capitalize' }}>{user?.user_type || '-'}</div>
+          </div>
+          <div>
+            <Text type="secondary">Created At</Text>
+            <div style={{ fontSize: 16 }}>{user?.created_at ? formatDateTime(user.created_at) : '-'}</div>
           </div>
         </Card>
       ),

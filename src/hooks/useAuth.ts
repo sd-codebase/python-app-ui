@@ -96,7 +96,7 @@ export const useAuth = () => {
           }
         } catch {
           // If getCurrentUser fails, still proceed with login
-          storeLogin({ id: '', full_name: '', email: '', role, is_active: true, is_verified: true, created_at: '', updated_at: '' }, access_token, role);
+          storeLogin({ id: '', full_name: '', email: '', role, user_type: 'regular', is_active: true, is_verified: true, created_at: '', updated_at: '' }, access_token, role);
           navigate(ROUTES.ADMIN_DASHBOARD);
         }
       }

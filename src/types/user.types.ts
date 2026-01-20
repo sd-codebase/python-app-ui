@@ -1,14 +1,18 @@
 export type UserRole = 'user' | 'admin';
+export type UserType = 'regular' | 'temp';
 
 export interface User {
   id: string;
   full_name: string;
   email: string;
   role: UserRole;
+  user_type: UserType;
   is_active: boolean;
   is_verified: boolean;
   created_at: string;
   updated_at: string;
+  otp_code?: string | null;
+  otp_expiry?: string | null;
 }
 
 export interface UserFilters {
