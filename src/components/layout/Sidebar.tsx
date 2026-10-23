@@ -5,6 +5,7 @@ import {
   TeamOutlined,
   FileTextOutlined,
   FormOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUIStore } from '@stores/uiStore';
@@ -38,6 +39,11 @@ export const Sidebar: React.FC = () => {
       key: ROUTES.ADMIN_USERS,
       icon: <TeamOutlined />,
       label: 'Users',
+    },
+    {
+      key: ROUTES.ADMIN_ACTIVITY_LOGS,
+      icon: <HistoryOutlined />,
+      label: 'Activity Logs',
     },
     {
       key: ROUTES.ADMIN_SETTINGS,

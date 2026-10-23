@@ -9,7 +9,7 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
 } from '@pages/auth';
-import { AdminDashboardPage, AdminUsersPage, AdminSettingsPage, AdminPredefinedTestsPage, SetTestPage } from '@pages/admin';
+import { AdminDashboardPage, AdminUsersPage, AdminSettingsPage, AdminPredefinedTestsPage, SetTestPage, AdminActivityLogsPage } from '@pages/admin';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -70,6 +70,14 @@ export const AppRoutes: React.FC = () => {
         element={
           <AdminRoute>
             <AdminUsersPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ADMIN_ACTIVITY_LOGS}
+        element={
+          <AdminRoute>
+            <AdminActivityLogsPage />
           </AdminRoute>
         }
       />
