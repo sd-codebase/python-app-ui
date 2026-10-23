@@ -41,11 +41,47 @@ export interface ActivityLogFilters {
   device_id?: string;
   session_id?: string;
   category?: ActivityCategory;
+  exclude_category?: ActivityCategory[];
   name?: string;
   from_ts?: string;
   to_ts?: string;
   skip?: number;
   limit?: number;
+}
+
+export interface ActivityUserSummary {
+  user_id: string;
+  full_name?: string | null;
+  whatsapp_number?: string | null;
+  user_type?: string | null;
+  events: number;
+  sessions: number;
+  devices: number;
+  first_ts: string;
+  last_ts: string;
+  last_event?: string | null;
+  last_screen?: string | null;
+  app_variant?: string | null;
+  app_version?: string | null;
+  pre_login_events: number;
+  errors: number;
+  tests_submitted: number;
+}
+
+export interface ActivityUserSummaryList {
+  items: ActivityUserSummary[];
+  total: number;
+}
+
+export interface ActivityLogRangeSummary {
+  end_date: string;
+  count: number;
+  oldest_ts?: string | null;
+}
+
+export interface ActivityLogPurgeResult {
+  end_date: string;
+  deleted: number;
 }
 
 export interface ActivityDevice {

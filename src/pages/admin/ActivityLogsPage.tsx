@@ -14,11 +14,21 @@ import {
   Descriptions,
   Drawer,
   Tooltip,
+  Tabs,
 } from 'antd';
 import { SearchOutlined, ClearOutlined, ReloadOutlined, MobileOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useQuery } from '@tanstack/react-query';
 import { AppLayout } from '@components/layout';
+import {
+  ActivityPurgePanel,
+  ActivityUsersTab,
+  CATEGORY_COLORS,
+  UserTimelineDrawer,
+  formatDuration,
+  formatTs,
+  summarizeProps,
+} from '@components/activity-logs';
 import { activityLogService } from '@services/activityLog.service';
 import type { ActivityLog, ActivityLogFilters, ActivityCategory } from '@app-types/index';
 
@@ -27,50 +37,24 @@ const { RangePicker } = DatePicker;
 
 const PAGE_SIZE = 50;
 
-const CATEGORY_COLORS: Record<ActivityCategory, string> = {
-  screen: 'blue',
-  action: 'green',
-  api: 'default',
-  error: 'red',
-  lifecycle: 'purple',
-};
-
-const formatTs = (ts: string) =>
-  new Date(ts.endsWith('Z') ? ts : `${ts}Z`).toLocaleString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-
-const formatDuration = (ms?: number | null) => {
-  if (ms === null || ms === undefined) return null;
-  if (ms < 1000) return `${ms} ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`;
-  return `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`;
-};
-
-const summarizeProps = (props: Record<string, unknown>) =>
-  Object.entries(props)
-    .filter(([, v]) => v !== null && v !== undefined && typeof v !== 'object')
-    .slice(0, 6)
-    .map(([k, v]) => `${k}: ${String(v)}`)
-    .join(' · ');
+type TabKey = 'users' | 'events' | 'purge';
 
 export const AdminActivityLogsPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabKey>('users');
   // Draft filters are edited in the form; applied filters drive the query
   const [draft, setDraft] = useState<ActivityLogFilters>({});
   const [filters, setFilters] = useState<ActivityLogFilters>({});
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<ActivityLog | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [timelineUserId, setTimelineUserId] = useState<string | null>(null);
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: ['activityLogs', filters, page],
     queryFn: () =>
       activityLogService.getLogs({ ...filters, skip: (page - 1) * PAGE_SIZE, limit: PAGE_SIZE }),
     placeholderData: (previous) => previous,
+    enabled: activeTab === 'events',
   });
 
   const { data: device } = useQuery({
@@ -88,8 +72,14 @@ export const AdminActivityLogsPage: React.FC = () => {
     setPage(1);
   };
 
-  // Clicking a user/device/session in the table narrows the search to it
+  // Clicking a device/session in the table narrows the search to it
   const filterBy = (key: keyof ActivityLogFilters, value: string) => applyFilters({ [key]: value });
+
+  const showUserInSearch = (userId: string) => {
+    setTimelineUserId(null);
+    setActiveTab('events');
+    filterBy('user_id', userId);
+  };
 
   const columns: ColumnsType<ActivityLog> = [
     {
@@ -110,9 +100,11 @@ export const AdminActivityLogsPage: React.FC = () => {
         const label = record.user?.full_name || record.user_id.slice(0, 8);
         return (
           <Space direction="vertical" size={0}>
-            <Button type="link" size="small" style={{ padding: 0 }} onClick={() => filterBy('user_id', record.user_id!)}>
-              {label}
-            </Button>
+            <Tooltip title="Open timeline">
+              <Button type="link" size="small" style={{ padding: 0 }} onClick={() => setTimelineUserId(record.user_id!)}>
+                {label}
+              </Button>
+            </Tooltip>
             {record.user?.whatsapp_number && <Text type="secondary">{record.user.whatsapp_number}</Text>}
             <Space size={4}>
               {record.user_type === 'temp' && <Tag color="orange">Guest</Tag>}
@@ -194,15 +186,8 @@ export const AdminActivityLogsPage: React.FC = () => {
     },
   ];
 
-  return (
-    <AppLayout>
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2}>Activity Logs</Title>
-        <Text type="secondary">
-          Everything users do in the app. Activity before login is linked to the user once they log in.
-        </Text>
-      </div>
-
+  const eventsTab = (
+    <>
       <Card style={{ marginBottom: 16 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
@@ -305,6 +290,37 @@ export const AdminActivityLogsPage: React.FC = () => {
           }}
         />
       </Card>
+    </>
+  );
+
+  return (
+    <AppLayout>
+      <div style={{ marginBottom: 16 }}>
+        <Title level={2}>Activity Logs</Title>
+        <Text type="secondary">
+          Everything users do in the app. Activity before login is linked to the user once they log in.
+        </Text>
+      </div>
+
+      <Tabs
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key as TabKey)}
+        items={[
+          {
+            key: 'users',
+            label: 'Users',
+            children: <ActivityUsersTab onOpenTimeline={setTimelineUserId} />,
+          },
+          { key: 'events', label: 'All events', children: eventsTab },
+          { key: 'purge', label: 'Download / delete', children: <ActivityPurgePanel /> },
+        ]}
+      />
+
+      <UserTimelineDrawer
+        userId={timelineUserId}
+        onClose={() => setTimelineUserId(null)}
+        onShowInSearch={showUserInSearch}
+      />
 
       <Drawer
         title={selected ? selected.name : ''}
@@ -321,9 +337,13 @@ export const AdminActivityLogsPage: React.FC = () => {
               <Descriptions.Item label="Screen">{selected.screen || '-'}</Descriptions.Item>
               <Descriptions.Item label="Duration">{formatDuration(selected.duration_ms) || '-'}</Descriptions.Item>
               <Descriptions.Item label="User">
-                {selected.user_id
-                  ? `${selected.user?.full_name ?? ''} ${selected.user?.whatsapp_number ?? ''} (${selected.user_id})`
-                  : 'Anonymous'}
+                {selected.user_id ? (
+                  <Button type="link" size="small" style={{ padding: 0 }} onClick={() => setTimelineUserId(selected.user_id!)}>
+                    {`${selected.user?.full_name ?? ''} ${selected.user?.whatsapp_number ?? ''} (${selected.user_id})`}
+                  </Button>
+                ) : (
+                  'Anonymous'
+                )}
               </Descriptions.Item>
               <Descriptions.Item label="Pre-login">
                 {selected.pre_login ? `Yes${selected.linked_at ? `, linked ${formatTs(selected.linked_at)}` : ''}` : 'No'}
@@ -374,7 +394,7 @@ export const AdminActivityLogsPage: React.FC = () => {
                     onClick={() => {
                       setDeviceId(null);
                       setSelected(null);
-                      filterBy('user_id', id);
+                      setTimelineUserId(id);
                     }}
                   >
                     {id}
