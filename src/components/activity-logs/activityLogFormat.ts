@@ -47,10 +47,16 @@ export const summarizeProps = (props: Record<string, unknown>) =>
 export const describeEvent = (log: ActivityLog): string => {
   const p = log.props as Record<string, any>;
   switch (log.name) {
+    case 'screen_visit':
+      return `Viewed ${log.screen ?? 'screen'} for ${formatDuration(log.duration_ms) ?? '?'}${p.ended_by === 'background' ? ' (then left the app)' : ''}`;
     case 'screen_view':
       return `Opened ${log.screen ?? 'screen'}`;
     case 'screen_leave':
       return `Left ${log.screen ?? 'screen'} after ${formatDuration(log.duration_ms) ?? '?'}`;
+    case 'api_slow':
+      return `Slow request: ${p.method} ${p.url} → ${p.status} (${formatDuration(log.duration_ms)})`;
+    case 'ad_no_fill':
+      return `No ${p.ad_type} ad available${p.label ? ` for "${p.label}"` : ''}`;
     case 'api_call':
       return `${p.method} ${p.url} → ${p.status} (${formatDuration(log.duration_ms)})`;
     case 'api_error':
