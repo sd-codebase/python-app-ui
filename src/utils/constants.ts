@@ -16,6 +16,7 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_SETTINGS: '/admin/settings',
   ADMIN_PREDEFINED_TESTS: '/admin/predefined-tests',
+  ADMIN_ACTIVITY_LOGS: '/admin/activity-logs',
 } as const;
 
 export const PUBLIC_ROUTES = [
