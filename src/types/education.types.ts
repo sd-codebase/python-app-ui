@@ -49,6 +49,9 @@ export interface TestSection {
   negative_marks: number;
   is_numerical: boolean;
   difficulty?: DifficultyDistribution;
+  // Optional chapter pool: questions come only from these chapters.
+  // Absent/empty = whole subject (original behaviour).
+  chapter_ids?: string[] | null;
 }
 
 export interface SubjectSectionInput {
