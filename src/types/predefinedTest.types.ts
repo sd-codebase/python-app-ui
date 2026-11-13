@@ -9,6 +9,8 @@ export interface PredefinedTestQuestion {
   question: string;
   options?: Record<string, string> | null;
   has_integer_answer?: boolean;
+  type?: string | null; // JEE Advanced only, e.g. "True/False", "Multiple Correct"
+  user_answer?: string | null;
 }
 
 // Admin - Create predefined test request
@@ -88,14 +90,20 @@ export interface OngoingAttempt {
   answers: Record<string, string | null>;
 }
 
+// User - answer item sent to the backend
+export interface AttemptAnswerItem {
+  question_id: string;
+  user_answer: string | null;
+}
+
 // User - Save progress request
 export interface SaveProgressRequest {
-  answers: Record<string, string | null>;
+  answers: AttemptAnswerItem[];
 }
 
 // User - Submit attempt request
 export interface SubmitAttemptRequest {
-  answers: Record<string, string | null>;
+  answers: AttemptAnswerItem[];
 }
 
 // User - Submit attempt response
@@ -129,23 +137,20 @@ export interface AttemptHistoryItem {
   time_taken_seconds: number;
 }
 
-// User - Review attempt (with correct answers)
-export interface ReviewAttemptQuestion {
+// User - Review attempt (with correct answers).
+// The backend returns per-question results only (no question text or options).
+export interface ReviewAttemptResult {
   question_id: string;
-  question: string;
-  options?: Record<string, string> | null;
-  has_integer_answer?: boolean;
   user_answer: string | null;
   correct_answer: string;
   is_correct: boolean;
+  has_integer_answer?: boolean | null;
+  type?: string | null;
 }
 
 export interface ReviewAttemptResponse {
   attempt_id: string;
   test_id: string;
-  test_name: string;
-  test_type: TestType;
-  reference_name: string;
   total_questions: number;
   correct_count: number;
   wrong_count: number;
@@ -153,6 +158,6 @@ export interface ReviewAttemptResponse {
   score: number;
   max_score: number;
   percentage: number;
-  time_taken_seconds: number;
-  questions: ReviewAttemptQuestion[];
+  time_taken_seconds?: number;
+  results: ReviewAttemptResult[];
 }

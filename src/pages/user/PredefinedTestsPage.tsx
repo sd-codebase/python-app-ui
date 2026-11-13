@@ -9,6 +9,7 @@ import {
   Tabs,
   Modal,
   Radio,
+  Checkbox,
   Input,
   message,
   Progress,
@@ -40,6 +41,15 @@ import type {
   SubmitAttemptResponse,
   TestType,
 } from '@app-types/index';
+import type { PredefinedTestQuestion } from '@app-types/predefinedTest.types';
+import {
+  ABCD,
+  TRUE_FALSE,
+  hasOptionText,
+  isNumericDraft,
+  parseOptionList,
+  resolveAnswerKind,
+} from '@utils/questionType';
 
 const { Title, Text, Paragraph } = Typography;
 const { Countdown } = Statistic;
@@ -105,7 +115,9 @@ export const UserPredefinedTestsPage: React.FC = () => {
     if (currentAttempt && viewMode === 'test') {
       autoSaveRef.current = setInterval(async () => {
         try {
-          await userPredefinedTestService.saveProgress(currentAttempt.attempt_id, { answers });
+          await userPredefinedTestService.saveProgress(currentAttempt.attempt_id, {
+            answers: toAnswerItems(currentAttempt, answers),
+          });
         } catch {
           // Silent fail for auto-save
         }
@@ -147,6 +159,16 @@ export const UserPredefinedTestsPage: React.FC = () => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
 
+  // The backend expects a list of { question_id, user_answer }.
+  const toAnswerItems = (attempt: OngoingAttempt, record: Record<string, string | null>) =>
+    attempt.questions.map((q) => {
+      const value = record[q.question_id];
+      return {
+        question_id: q.question_id,
+        user_answer: value === undefined || value === '' ? null : value,
+      };
+    });
+
   const handleSubmitTest = async () => {
     if (!currentAttempt) return;
 
@@ -158,7 +180,7 @@ export const UserPredefinedTestsPage: React.FC = () => {
         try {
           const result = await userPredefinedTestService.submitAttempt(
             currentAttempt.attempt_id,
-            { answers }
+            { answers: toAnswerItems(currentAttempt, answers) }
           );
           if (result) {
             setTestResult(result);
@@ -185,7 +207,7 @@ export const UserPredefinedTestsPage: React.FC = () => {
     try {
       const result = await userPredefinedTestService.submitAttempt(
         currentAttempt.attempt_id,
-        { answers }
+        { answers: toAnswerItems(currentAttempt, answers) }
       );
       if (result) {
         setTestResult(result);
@@ -358,6 +380,104 @@ export const UserPredefinedTestsPage: React.FC = () => {
     },
   ];
 
+  // Answer input by question type:
+  //   true_false -> two buttons, True / False
+  //   multiple   -> tick any of a-d, sent as "a,c"
+  //   numerical  -> number input
+  //   single     -> choose one of a-d (NEET / JEE Main and most JEE Advanced types)
+  const renderAnswerInput = (q: PredefinedTestQuestion) => {
+    const value = answers[q.question_id] ?? null;
+    const kind = resolveAnswerKind(q.has_integer_answer, q.type);
+    const withText = hasOptionText(q.options);
+    const optionKeys = withText ? Object.keys(q.options!) : ABCD;
+
+    if (kind === 'numerical') {
+      return (
+        <Input
+          placeholder="Enter your answer"
+          inputMode="decimal"
+          value={value || ''}
+          onChange={(e) => {
+            if (isNumericDraft(e.target.value)) handleAnswerChange(q.question_id, e.target.value);
+          }}
+          style={{ width: 200 }}
+        />
+      );
+    }
+
+    if (kind === 'true_false') {
+      return (
+        <Radio.Group
+          optionType="button"
+          buttonStyle="solid"
+          value={value}
+          onChange={(e) => handleAnswerChange(q.question_id, e.target.value)}
+        >
+          {TRUE_FALSE.map((tf) => (
+            <Radio.Button key={tf} value={tf} style={{ minWidth: 96, textAlign: 'center' }}>
+              {tf}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
+      );
+    }
+
+    if (kind === 'multiple') {
+      const selected = parseOptionList(value);
+      return (
+        <Checkbox.Group
+          value={selected}
+          onChange={(checked) => {
+            const next = (checked as string[]).slice().sort();
+            handleAnswerChange(q.question_id, next.length ? next.join(',') : null);
+          }}
+          style={{ width: '100%' }}
+        >
+          <Space direction={withText ? 'vertical' : 'horizontal'} style={{ width: '100%' }}>
+            {optionKeys.map((key) => (
+              <Checkbox key={key} value={key} style={{ padding: 8 }}>
+                <Text>{withText ? `${key}) ${q.options![key]}` : key}</Text>
+              </Checkbox>
+            ))}
+          </Space>
+        </Checkbox.Group>
+      );
+    }
+
+    if (!withText) {
+      return (
+        <Radio.Group
+          optionType="button"
+          buttonStyle="solid"
+          value={value}
+          onChange={(e) => handleAnswerChange(q.question_id, e.target.value)}
+        >
+          {ABCD.map((key) => (
+            <Radio.Button key={key} value={key} style={{ minWidth: 56, textAlign: 'center' }}>
+              {key}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
+      );
+    }
+
+    return (
+      <Radio.Group
+        value={value}
+        onChange={(e) => handleAnswerChange(q.question_id, e.target.value)}
+        style={{ width: '100%' }}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {optionKeys.map((key) => (
+            <Radio key={key} value={key} style={{ padding: 8 }}>
+              <Text>{key}) {q.options![key]}</Text>
+            </Radio>
+          ))}
+        </Space>
+      </Radio.Group>
+    );
+  };
+
   // Render test taking view
   if (viewMode === 'test' && currentAttempt) {
     const currentQuestion = currentAttempt.questions[currentQuestionIndex];
@@ -402,28 +522,7 @@ export const UserPredefinedTestsPage: React.FC = () => {
               {currentQuestion.question}
             </Paragraph>
 
-            {currentQuestion.options ? (
-              <Radio.Group
-                value={answers[currentQuestion.question_id] || null}
-                onChange={(e) => handleAnswerChange(currentQuestion.question_id, e.target.value)}
-                style={{ width: '100%' }}
-              >
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  {Object.entries(currentQuestion.options).map(([key, value]) => (
-                    <Radio key={key} value={key} style={{ padding: 8 }}>
-                      <Text>{key}) {value}</Text>
-                    </Radio>
-                  ))}
-                </Space>
-              </Radio.Group>
-            ) : (
-              <Input
-                placeholder="Enter your answer"
-                value={answers[currentQuestion.question_id] || ''}
-                onChange={(e) => handleAnswerChange(currentQuestion.question_id, e.target.value)}
-                style={{ width: 200 }}
-              />
-            )}
+            {renderAnswerInput(currentQuestion)}
           </Card>
 
           <Row gutter={16}>
@@ -537,7 +636,7 @@ export const UserPredefinedTestsPage: React.FC = () => {
               <Col span={8}>
                 <Statistic
                   title="Time Taken"
-                  value={Math.floor(testResult.time_taken_seconds / 60)}
+                  value={testResult.time_taken_seconds != null ? Math.floor(testResult.time_taken_seconds / 60) : '-'}
                   suffix="mins"
                   prefix={<ClockCircleOutlined />}
                 />
@@ -567,6 +666,7 @@ export const UserPredefinedTestsPage: React.FC = () => {
     }
 
     if (reviewData) {
+      const reviewMeta = history.find((h) => h.attempt_id === reviewData.attempt_id);
       return (
         <AppLayout>
           <Card>
@@ -574,11 +674,13 @@ export const UserPredefinedTestsPage: React.FC = () => {
               Back to Tests
             </Button>
 
-            <Title level={4}>{reviewData.test_name}</Title>
+            <Title level={4}>{reviewMeta?.test_name ?? 'Review'}</Title>
             <Row gutter={16} style={{ marginBottom: 24 }}>
-              <Col>
-                <Tag color="blue">{reviewData.test_type.toUpperCase()}</Tag>
-              </Col>
+              {reviewMeta?.test_type && (
+                <Col>
+                  <Tag color="blue">{reviewMeta.test_type.toUpperCase()}</Tag>
+                </Col>
+              )}
               <Col>
                 <Text>Score: {reviewData.score}/{reviewData.max_score} ({reviewData.percentage.toFixed(1)}%)</Text>
               </Col>
@@ -595,61 +697,56 @@ export const UserPredefinedTestsPage: React.FC = () => {
 
             <Divider>Questions & Answers</Divider>
 
-            {reviewData.questions.map((q, idx) => (
-              <Card
-                key={q.question_id}
-                size="small"
-                style={{
-                  marginBottom: 16,
-                  borderLeft: `4px solid ${q.is_correct ? '#52c41a' : q.user_answer ? '#f5222d' : '#faad14'}`,
-                }}
-              >
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  <div>
-                    <Tag color={q.is_correct ? 'success' : q.user_answer ? 'error' : 'warning'}>
-                      {q.is_correct ? 'Correct' : q.user_answer ? 'Wrong' : 'Unanswered'}
-                    </Tag>
-                    <Text strong> Q{idx + 1}: </Text>
-                    <Text>{q.question}</Text>
-                  </div>
-
-                  {q.options && (
-                    <div style={{ marginLeft: 20 }}>
-                      {Object.entries(q.options).map(([key, value]) => {
-                        const isCorrect = key === q.correct_answer;
-                        const isUserAnswer = key === q.user_answer;
-                        return (
-                          <div
-                            key={key}
-                            style={{
-                              padding: '4px 8px',
-                              backgroundColor: isCorrect ? '#f6ffed' : isUserAnswer && !isCorrect ? '#fff1f0' : undefined,
-                              border: isCorrect ? '1px solid #b7eb8f' : isUserAnswer && !isCorrect ? '1px solid #ffa39e' : undefined,
-                              borderRadius: 4,
-                              marginBottom: 4,
-                            }}
-                          >
-                            <Text>{key}) {value}</Text>
-                            {isCorrect && <Tag color="success" style={{ marginLeft: 8 }}>Correct Answer</Tag>}
-                            {isUserAnswer && !isCorrect && <Tag color="error" style={{ marginLeft: 8 }}>Your Answer</Tag>}
-                          </div>
-                        );
-                      })}
+            {reviewData.results.map((r, idx) => {
+              const answered = r.user_answer !== null && r.user_answer !== '';
+              const kind = resolveAnswerKind(r.has_integer_answer, r.type);
+              return (
+                <Card
+                  key={r.question_id}
+                  size="small"
+                  style={{
+                    marginBottom: 16,
+                    borderLeft: `4px solid ${r.is_correct ? '#52c41a' : answered ? '#f5222d' : '#faad14'}`,
+                  }}
+                >
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <div>
+                      <Tag color={r.is_correct ? 'success' : answered ? 'error' : 'warning'}>
+                        {r.is_correct ? 'Correct' : answered ? 'Wrong' : 'Unanswered'}
+                      </Tag>
+                      <Text strong> Q{idx + 1}</Text>
                     </div>
-                  )}
-
-                  {q.has_integer_answer && (
-                    <div style={{ marginLeft: 20 }}>
-                      <Text>Your Answer: </Text>
-                      <Text type={q.is_correct ? 'success' : 'danger'}>{q.user_answer || 'Not answered'}</Text>
-                      <br />
-                      <Text>Correct Answer: </Text>
-                      <Text type="success">{q.correct_answer}</Text>
-                    </div>
-                  )}
-                </Space>
-              </Card>
-            ))}
+                    {kind === 'numerical' ? (
+                      <div style={{ marginLeft: 20 }}>
+                        <Text>Your Answer: </Text>
+                        <Text type={r.is_correct ? 'success' : 'danger'}>{r.user_answer || 'Not answered'}</Text>
+                        <br />
+                        <Text>Correct Answer: </Text>
+                        <Text type="success">{r.correct_answer}</Text>
+                      </div>
+                    ) : (
+                      <Space wrap style={{ marginLeft: 20 }}>
+                        {(kind === 'true_false' ? TRUE_FALSE : ABCD).map((key) => {
+                          const k = key.toLowerCase();
+                          const isCorrect = parseOptionList(r.correct_answer).includes(k);
+                          const isUser = parseOptionList(r.user_answer).includes(k);
+                          return (
+                            <Tag
+                              key={key}
+                              color={isCorrect ? 'success' : isUser ? 'error' : undefined}
+                              style={{ minWidth: 48, textAlign: 'center', padding: '2px 10px' }}
+                            >
+                              {key}
+                              {isCorrect ? ' ✓' : isUser ? ' ✗' : ''}
+                            </Tag>
+                          );
+                        })}
+                      </Space>
+                    )}
+                  </Space>
+                </Card>
+              );
+            })}
           </Card>
         </AppLayout>
       );
