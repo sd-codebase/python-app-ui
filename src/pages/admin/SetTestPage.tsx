@@ -16,6 +16,7 @@ import {
   Tag,
   Select,
   Popconfirm,
+  Tooltip,
 } from 'antd';
 import {
   PlusOutlined,
@@ -28,6 +29,7 @@ import {
 } from '@ant-design/icons';
 import { AppLayout } from '@components/layout';
 import { subjectService } from '@services/subject.service';
+import { chapterService } from '@services/chapter.service';
 import { courseService } from '@services/course.service';
 import { setTestService } from '@services/setTest.service';
 import type {
@@ -35,6 +37,7 @@ import type {
   SubjectSectionInput,
   Subject,
   Course,
+  Chapter,
   SetTestListResponse,
   SetTestResponse,
   TestType,
@@ -107,14 +110,31 @@ const DifficultyFields: React.FC<DifficultyFieldsProps> = ({ totalQuestions, for
 interface SectionFormProps {
   sections: TestSection[];
   onSectionsChange: (sections: TestSection[]) => void;
+  // When set (course formats), each section can be limited to chapters of this subject.
+  subjectId?: string;
 }
 
-const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange }) => {
+const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange, subjectId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSection, setEditingSection] = useState<TestSection | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [form] = Form.useForm();
 
   const questionCount = Form.useWatch('question_count', form) || 0;
+
+  useEffect(() => {
+    if (!subjectId || subjectId === 'any') return;
+    chapterService
+      .getChapters(subjectId)
+      .then((data) => setChapters([...data].sort((a, b) => a.order_num - b.order_num)))
+      .catch(() => setChapters([]));
+  }, [subjectId]);
+
+  const chapterName = (id: string) => {
+    const c = chapters.find((ch) => ch.id === id);
+    return c ? `${c.order_num}. ${c.name}` : id;
+  };
+  const showChapterPicker = !!subjectId && subjectId !== 'any';
 
   const handleAdd = () => {
     setEditingSection(null);
@@ -133,7 +153,8 @@ const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange })
 
   const handleEdit = (section: TestSection) => {
     setEditingSection(section);
-    form.setFieldsValue(section);
+    form.resetFields();
+    form.setFieldsValue({ ...section, chapter_ids: section.chapter_ids || [] });
     setIsModalOpen(true);
   };
 
@@ -148,17 +169,23 @@ const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange })
       const l3 = values.difficulty?.L3 || 0;
       const l1 = Math.max(0, values.question_count - l2 - l3);
 
-      const sectionData = {
-        ...values,
+      const { chapter_ids: pickedChapters, ...rest } = values;
+      const sectionData: Partial<TestSection> = {
+        ...rest,
         difficulty: { L1: l1, L2: l2, L3: l3 },
       };
+      if (showChapterPicker) {
+        // Empty selection = whole subject (original behaviour): send null, not [].
+        sectionData.chapter_ids = pickedChapters && pickedChapters.length ? pickedChapters : null;
+      }
+      // Without the picker (subject formats), any existing chapter_ids are kept untouched.
 
       if (editingSection) {
         onSectionsChange(
           sections.map((s) => (s.id === editingSection.id ? { ...s, ...sectionData } : s))
         );
       } else {
-        onSectionsChange([...sections, { ...sectionData, id: generateId() }]);
+        onSectionsChange([...sections, { ...(sectionData as TestSection), id: generateId() }]);
       }
       setIsModalOpen(false);
     });
@@ -180,6 +207,22 @@ const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange })
         </Tag>
       ),
     },
+    ...(showChapterPicker
+      ? [
+          {
+            title: 'Chapters',
+            key: 'chapters',
+            render: (_: unknown, record: TestSection) =>
+              record.chapter_ids && record.chapter_ids.length ? (
+                <Tooltip title={record.chapter_ids.map(chapterName).join(', ')}>
+                  <Tag color="orange">{record.chapter_ids.length} chapters</Tag>
+                </Tooltip>
+              ) : (
+                <Tag>All</Tag>
+              ),
+          },
+        ]
+      : []),
     {
       title: 'Actions',
       key: 'actions',
@@ -263,6 +306,22 @@ const SectionForm: React.FC<SectionFormProps> = ({ sections, onSectionsChange })
           >
             <Switch checkedChildren="Yes" unCheckedChildren="No" />
           </Form.Item>
+
+          {showChapterPicker && (
+            <Form.Item
+              name="chapter_ids"
+              label="Chapters (optional)"
+              extra="Questions for this section come only from the selected chapters. Leave empty to use the whole subject."
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="All chapters of this subject"
+                optionFilterProp="label"
+                options={chapters.map((c) => ({ label: `${c.order_num}. ${c.name}`, value: c.id }))}
+              />
+            </Form.Item>
+          )}
 
           <DifficultyFields totalQuestions={questionCount} form={form} />
         </Form>
@@ -623,6 +682,7 @@ const CourseTestFormat: React.FC<CourseTestFormatProps> = ({ editingTest, onSave
           <SectionForm
             sections={subject.sections}
             onSectionsChange={(sections) => handleSectionsChange(index, sections)}
+            subjectId={subject.subject_id}
           />
         </Card>
       ))}
