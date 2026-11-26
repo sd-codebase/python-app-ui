@@ -32,10 +32,6 @@ export const UserSettingsPage: React.FC = () => {
             <Text type="secondary">Role</Text>
             <div style={{ fontSize: 16, textTransform: 'capitalize' }}>{user?.role}</div>
           </div>
-          <div style={{ marginBottom: 16 }}>
-            <Text type="secondary">User Type</Text>
-            <div style={{ fontSize: 16, textTransform: 'capitalize' }}>{user?.user_type}</div>
-          </div>
           <div>
             <Text type="secondary">Created At</Text>
             <div style={{ fontSize: 16 }}>{user?.created_at ? formatDateTime(user.created_at) : '-'}</div>

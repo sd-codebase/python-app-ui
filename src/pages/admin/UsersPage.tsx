@@ -83,16 +83,6 @@ export const AdminUsersPage: React.FC = () => {
       ),
     },
     {
-      title: 'User Type',
-      dataIndex: 'user_type',
-      key: 'user_type',
-      render: (userType: string) => (
-        <Tag color={userType === 'temp' ? 'orange' : 'green'}>
-          {userType?.toUpperCase() || 'REGULAR'}
-        </Tag>
-      ),
-    },
-    {
       title: 'OTP',
       dataIndex: 'otp_code',
       key: 'otp_code',
@@ -128,7 +118,7 @@ export const AdminUsersPage: React.FC = () => {
       key: 'actions',
       width: 100,
       render: (_, record) => (
-        record.user_type === 'temp' || !record.is_active ? (
+        !record.is_active ? (
           <Popconfirm
             title="Delete user?"
             description="This action cannot be undone."
